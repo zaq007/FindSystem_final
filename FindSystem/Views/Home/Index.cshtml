@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    @model FindSystem.Models.LoginModel
+}
+@if (!Request.IsAuthenticated)
+{
+    using (Html.BeginForm("Login", "Account", FormMethod.Post)) {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <legend>Форма входа</legend>
+            <ol>
+                <li>
+                    @Html.LabelFor(m => m.UserName)
+                    @Html.TextBoxFor(m => m.UserName)
+                    @Html.ValidationMessageFor(m => m.UserName)
+                </li>
+                <li>
+                    @Html.LabelFor(m => m.Password)
+                    @Html.PasswordFor(m => m.Password)
+                    @Html.ValidationMessageFor(m => m.Password)
+                </li>
+                <li>
+                    @Html.HiddenFor(m => m.RememberMe, new { value = true })
+                </li>
+            </ol>
+            <input type="submit" value="Login" />
+        </fieldset>
+    }
+}
+else
+{
+    
+    <div ng-app="findApp">
+        <div ng-controller="mainController">
+            <uib-tabset active="activeJustified" justified="true">
+                <uib-tab index="0" heading="Game">
+                    <input type="button" class="block" title="Start game" ng-hide="gameStarted" ng-click="startGame()"/>
+                    <div ng-show="gameStarted">
+                        <img class="block" ng-src="{{img}}" />
+                        <span class="alert green block" ng-bind="task"></span>
+                        <span class="alert red block" ng-show="message!==null" ng-bind="message"></span>
+                        <input class="block" type="text" ng-disabled="frozen" ng-model="userInput"/>
+                        <input class="block" type="button" value="Answer" ng-disabled="frozen" ng-click="tryAnswer(userInput)"/>
+                    </div>
+                </uib-tab>
+                <uib-tab index="1" heading="Scoreboard">
+                    <div ng-repeat="score in scoreboard">
+                        <uib-progressbar class="progress-striped active" max="10" value="score.position"><span style="color:white; white-space:nowrap;">{{score.position}} / 10</span></uib-progressbar>
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+    
+    @section Scripts {
+        @Scripts.Render("~/Scripts/app.js")
+    }
+}
