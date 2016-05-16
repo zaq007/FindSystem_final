@@ -795,4 +795,7 @@ span.block
     border-color: #d6e9c6;
 }
 
-
+.progress-striped.active
+{
+    width: 100%;
+}

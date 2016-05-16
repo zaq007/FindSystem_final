@@ -46,8 +46,12 @@ else
                     </div>
                 </uib-tab>
                 <uib-tab index="1" heading="Scoreboard">
-                    <div ng-repeat="score in scoreboard">
-                        <uib-progressbar class="progress-striped active" max="10" value="score.position"><span style="color:white; white-space:nowrap;">{{score.position}} / 10</span></uib-progressbar>
+                    <span class="block">Your credits {{points}}</span>
+                    <div style="display:flex" ng-repeat="score in scoreboard">
+                        <uib-progressbar class="progress-striped active" max="10" value="score.position"><span style="color:white; white-space:nowrap;"> {{score.teamName}} : {{score.position}} / 10</span></uib-progressbar> 
+                        <span>
+                            <a ng-hide="score.teamId === currentTeamId" href="#" ng-click="freezeTeam(score.teamId)" >Freeze</a>
+                        </span>
                     </div>
                 </uib-tab>
             </uib-tabset>
