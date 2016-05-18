@@ -31,6 +31,7 @@ module.controller("mainController", ['$scope', '$http',
                 console.log(data);
                 if (data.data.end === true) {
                     $scope.end = true;
+                    $scope.message = "End of the game";
                 } else
                     if (data.data.right === true) {
                         $scope.img = data.data.img;
@@ -46,7 +47,7 @@ module.controller("mainController", ['$scope', '$http',
         $scope.freezeTeam = function (teamId) {
             console.log(teamId);
             $http.get('/Game/Freeze?userId=' + teamId, { "userId": teamId }).then(function (data) {
-
+                alert(data.data.data);
             });
         }
 
@@ -61,6 +62,8 @@ module.controller("mainController", ['$scope', '$http',
             $scope.frozen = data.data.frozen || false;
             $scope.scoreboard = JSON.parse(data.data.scoreboard) || [];
             $scope.end = data.data.end;
+            if($scope.end)
+                $scope.message = "End of the game";
         });
 
 
@@ -73,10 +76,11 @@ module.controller("mainController", ['$scope', '$http',
             $scope.frozen = false;
         };
 
-        chat.client.scoreboard = function (teamId) {
-            for (i = 0; i < $scope.scoreboard.lenght; i++)
-                if ($scope.scoreboard[i].teamId === teamId)
-                    $scope.scoreboard[i].position++;
+        chat.client.scoreboard = function (teamId, pos) {
+            for (var i = 0; i < $scope.scoreboard.length; i++)
+                if ($scope.scoreboard[i].teamId == teamId) {
+                    $scope.scoreboard[i].position = pos;
+                }
         };
 
         $.connection.hub.start();

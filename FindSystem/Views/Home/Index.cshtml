@@ -36,7 +36,7 @@ else
         <div ng-controller="mainController">
             <uib-tabset active="activeJustified" justified="true">
                 <uib-tab index="0" heading="Game">
-                    <input type="button" class="block" title="Start game" ng-hide="gameStarted" ng-click="startGame()"/>
+                    <input type="button" class="block" value="Start game!" ng-hide="gameStarted" ng-click="startGame()"/>
                     <div ng-show="gameStarted">
                         <img class="block" ng-src="{{img}}" />
                         <span class="alert green block" ng-bind="task"></span>
@@ -48,7 +48,7 @@ else
                 <uib-tab index="1" heading="Scoreboard">
                     <span class="block">Your credits {{points}}</span>
                     <div style="display:flex" ng-repeat="score in scoreboard">
-                        <uib-progressbar class="progress-striped active" max="10" value="score.position"><span style="color:white; white-space:nowrap;"> {{score.teamName}} : {{score.position}} / 10</span></uib-progressbar> 
+                        <uib-progressbar class="progress-striped active" max="8" value="score.position"><span style="color:white; white-space:nowrap;"> {{score.teamName}} : {{score.position}} / 10</span></uib-progressbar> 
                         <span>
                             <a ng-hide="score.teamId === currentTeamId" href="#" ng-click="freezeTeam(score.teamId)" >Freeze</a>
                         </span>

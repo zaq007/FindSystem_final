@@ -56,14 +56,14 @@ namespace FindSystem.Controllers
             var task = _contextProvider.Tasks.Where(x => x.Path.Team.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId && x.Position == user.State.Position).FirstOrDefault();
             if (String.Compare(task.Answer, answer, true) == 0)
             {
-                if (task.Position == 10)
+                if (task.Position == 8)
                 {
                     user.EndTime = DateTime.Now;
                     _contextProvider.SaveChanges();
                     return Json(new { end = true, right = true });
                 }
                 user.State.Position++;
-                GlobalHost.ConnectionManager.GetHubContext<FindHub>().Clients.All.scoreboard(user.UserId);
+                GlobalHost.ConnectionManager.GetHubContext<FindHub>().Clients.All.scoreboard(user.UserId, user.State.Position);
                 _contextProvider.SaveChanges();
                 return Json(_contextProvider.Tasks.Where(x => x.Path.Team.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId && x.Position == user.State.Position).Select(x => new { right = true, img = x.Img, comments = x.Comments, number = x.Position }).FirstOrDefault());
             } else
@@ -80,37 +80,53 @@ namespace FindSystem.Controllers
         [HttpGet]
         public ActionResult State()
         {
-            var user = _contextProvider.UserProfiles.Where(x => x.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId).FirstOrDefault();
-            var score_arr = _contextProvider.States.Select(x => new ScoreboardModel { teamName = x.Team.Path.Name, teamId = x.Team.UserId, position = x.Position }).ToList<ScoreboardModel>();
-            StringBuilder score_sb = new StringBuilder();
-            JsonSerializer.Create().Serialize(new StringWriter(score_sb), score_arr);
-            string score = score_sb.ToString();
-            if (user.EndTime != null)
+            try
             {
-                return Json(new { scoreboard = score, 
-                    teamId = WebMatrix.WebData.WebSecurity.CurrentUserId, 
-                    points = user.Points,
-                    end = true
-                });
-            }
-            if (user.StartTime == null)
-            {
-                return Json(new { scoreboard = score, 
-                    teamId = WebMatrix.WebData.WebSecurity.CurrentUserId, 
-                    points = user.Points }, JsonRequestBehavior.AllowGet);
-            }
-            return Json(_contextProvider.
-                Tasks.
-                Where(x => x.Path.Team.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId 
-                    && x.Position == user.State.Position).
-                    Select(x => new { gameStarted = true, 
-                        img = x.Img, 
-                        comments = x.Comments, 
-                        number = x.Position, 
-                        scoreboard = score, 
+                var user = _contextProvider.UserProfiles.Where(x => x.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId).FirstOrDefault();
+                var score_arr = _contextProvider.States.Select(x => new ScoreboardModel { teamName = x.Team.Path.Name, teamId = x.Team.UserId, position = x.Position }).ToList<ScoreboardModel>();
+                StringBuilder score_sb = new StringBuilder();
+                JsonSerializer.Create().Serialize(new StringWriter(score_sb), score_arr);
+                string score = score_sb.ToString();
+                if (user.EndTime != null)
+                {
+                    return Json(new
+                    {
+                        scoreboard = score,
+                        teamId = WebMatrix.WebData.WebSecurity.CurrentUserId,
+                        points = user.Points,
+                        end = true
+                    });
+                }
+                if (user.StartTime == null)
+                {
+                    return Json(new
+                    {
+                        scoreboard = score,
                         teamId = WebMatrix.WebData.WebSecurity.CurrentUserId,
                         points = user.Points
-                    }).FirstOrDefault(), JsonRequestBehavior.AllowGet);
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                return Json(_contextProvider.
+                    Tasks.
+                    Where(x => x.Path.Team.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId
+                        && x.Position == user.State.Position).
+                        Select(x => new
+                        {
+                            gameStarted = true,
+                            img = x.Img,
+                            comments = x.Comments,
+                            number = x.Position,
+                            scoreboard = score,
+                            teamId = WebMatrix.WebData.WebSecurity.CurrentUserId,
+                            points = user.Points
+                        }).FirstOrDefault(), JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Response.Write(e.Message);
+            }
+            return Json(new { }, JsonRequestBehavior.AllowGet);
+
         }
 
         [HttpGet]
@@ -124,12 +140,12 @@ namespace FindSystem.Controllers
             }
             else
             {
-                if (currentUser.Points < 2)
+                if (currentUser.Points < 1)
                 {
                     return Json(new { data = "You have no enough points to freeze this team" }, JsonRequestBehavior.AllowGet);
                 }
                 user.State.IsFrozen = true;
-                currentUser.Points -= 2;
+                currentUser.Points -= 1;
                 _contextProvider.SaveChanges();
                 try
                 {
@@ -138,7 +154,7 @@ namespace FindSystem.Controllers
                 catch
                 {
                 }
-                Timer timer = new Timer(100000);
+                Timer timer = new Timer(300000);
                 timer.Elapsed += delegate
                 {
                     user.State.IsFrozen = false;
@@ -162,8 +178,5 @@ namespace FindSystem.Controllers
         {
             return Json(_contextProvider.States.Select(x => new { teamName = x.Team.Path.Name, teamId = x.Team.UserId, position = x.Position }), JsonRequestBehavior.AllowGet);
         }
-
-
-
     }
 }
