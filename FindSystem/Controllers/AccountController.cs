@@ -13,7 +13,6 @@ using FindSystem.Models;
 
 namespace FindSystem.Controllers
 {
-    [Authorize]
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
@@ -60,7 +59,7 @@ namespace FindSystem.Controllers
         //
         // GET: /Account/Register
 
-        [Authorize(Roles="Admin")]
+        //[Authorize(Roles="Admin")]
         public ActionResult Register()
         {
             return View();
@@ -70,7 +69,7 @@ namespace FindSystem.Controllers
         // POST: /Account/Register
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {

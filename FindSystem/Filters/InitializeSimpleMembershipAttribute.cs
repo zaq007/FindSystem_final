@@ -25,20 +25,11 @@ namespace FindSystem.Filters
         {
             public SimpleMembershipInitializer()
             {
-                Database.SetInitializer<UsersContext>(null);
+                //Database.SetInitializer<UsersContext>(null);
 
                 try
                 {
-                    using (var context = new UsersContext())
-                    {
-                        if (!context.Database.Exists())
-                        {
-                            // Создание базы данных SimpleMembership без схемы миграции Entity Framework
-                            ((IObjectContextAdapter)context).ObjectContext.CreateDatabase();
-                        }
-                    }
-
-                    WebSecurity.InitializeDatabaseConnection("Remote", "UserProfile", "UserId", "UserName", autoCreateTables: true);
+                    WebSecurity.InitializeDatabaseConnection("Local", "UserProfiles", "Id", "UserName", autoCreateTables: true);
                 }
                 catch (Exception ex)
                 {

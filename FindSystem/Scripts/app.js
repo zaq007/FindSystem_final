@@ -19,8 +19,8 @@ module.controller("mainController", ['$scope', '$http',
             $http.post('/Game/Start').then(function(data)
             {
                 $scope.gameStarted = true;
-                $scope.img = data.data[0].img;
-                $scope.task = data.data[0].comments;
+                $scope.img = data.data[0].Url;
+                $scope.task = data.data[0].Description;
                 $scope.number = data.data[0].number;
             });
         }
