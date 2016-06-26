@@ -70,5 +70,6 @@
     <Build Include="dbo\Tables\Path_Task.sql" />
     <Build Include="dbo\Views\CurrentTasks.sql" />
     <Build Include="dbo\Stored Procedures\GetCurrentTask.sql" />
+    <Build Include="dbo\Views\Scoreboard.sql" />
   </ItemGroup>
 </Project>

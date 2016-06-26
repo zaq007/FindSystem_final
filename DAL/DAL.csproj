@@ -50,12 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FindContext.cs" />
-    <Compile Include="Entity\Path.cs" />
-    <Compile Include="Entity\Path_Task.cs" />
-    <Compile Include="Entity\State.cs" />
-    <Compile Include="Entity\Task.cs" />
-    <Compile Include="Entity\UserProfile.cs" />
+    <Compile Include="Entity\Tables\Path.cs" />
+    <Compile Include="Entity\Tables\Path_Task.cs" />
+    <Compile Include="Entity\Tables\State.cs" />
+    <Compile Include="Entity\Tables\Task.cs" />
+    <Compile Include="Entity\Tables\UserProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Entity\Views\Scoreboard.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

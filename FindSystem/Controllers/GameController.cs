@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Web.Mvc;
+using Data.DTO;
+using FindSystem.Hubs;
+using Microsoft.AspNet.SignalR;
 using Service;
 using WebMatrix.WebData;
 
 namespace FindSystem.Controllers
 {
-    
-    [Authorize]
+
+    [System.Web.Mvc.Authorize]
     public class GameController : Controller
     {
         readonly FindService _service = new FindService();
@@ -29,94 +32,37 @@ namespace FindSystem.Controllers
             }
         }
 
-        //[HttpPost]
-        //public ActionResult TryAnswer(string answer)
-        //{
-        //    var user = _contextProvider.UserProfiles.Where(x => x.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId).FirstOrDefault();
-        //    if (user.EndTime != null)
-        //    {
-        //        return Json(new { message = "You have already ended the game" });
-        //    }
-        //    if (user.State.IsFrozen == true)
-        //    {
-        //        return Json(new { right = false, message = "You are frozen" });
-        //    }
-        //    var task = _contextProvider.Tasks.Where(x => x.Path.Team.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId && x.Position == user.State.Position).FirstOrDefault();
-        //    if (String.Compare(task.Answer, answer, true) == 0)
-        //    {
-        //        if (task.Position == 8)
-        //        {
-        //            user.EndTime = DateTime.Now;
-        //            _contextProvider.SaveChanges();
-        //            return Json(new { end = true, right = true });
-        //        }
-        //        user.State.Position++;
-        //        GlobalHost.ConnectionManager.GetHubContext<FindHub>().Clients.All.scoreboard(user.UserId, user.State.Position);
-        //        _contextProvider.SaveChanges();
-        //        return Json(_contextProvider.Tasks.Where(x => x.Path.Team.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId && x.Position == user.State.Position).Select(x => new { right = true, img = x.Img, comments = x.Comments, number = x.Position }).FirstOrDefault());
-        //    } else
-        //        return Json(new { right = false, end = false, message = "Wrong answer" });
-        //}
-        //
-        //public class ScoreboardModel
-        //{
-        //    public string teamName { get; set; }
-        //    public int teamId { get; set; }
-        //    public int? position { get; set; }
-        //}
-        //
-        //[HttpGet]
-        //public ActionResult State()
-        //{
-        //    try
-        //    {
-        //        var user = _contextProvider.UserProfiles.Where(x => x.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId).FirstOrDefault();
-        //        var score_arr = _contextProvider.States.Select(x => new ScoreboardModel { teamName = x.Team.Path.Name, teamId = x.Team.UserId, position = x.Position }).ToList<ScoreboardModel>();
-        //        StringBuilder score_sb = new StringBuilder();
-        //        JsonSerializer.Create().Serialize(new StringWriter(score_sb), score_arr);
-        //        string score = score_sb.ToString();
-        //        if (user.EndTime != null)
-        //        {
-        //            return Json(new
-        //            {
-        //                scoreboard = score,
-        //                teamId = WebMatrix.WebData.WebSecurity.CurrentUserId,
-        //                points = user.Points,
-        //                end = true
-        //            });
-        //        }
-        //        if (user.StartTime == null)
-        //        {
-        //            return Json(new
-        //            {
-        //                scoreboard = score,
-        //                teamId = WebMatrix.WebData.WebSecurity.CurrentUserId,
-        //                points = user.Points
-        //            }, JsonRequestBehavior.AllowGet);
-        //        }
-        //        return Json(_contextProvider.
-        //            Tasks.
-        //            Where(x => x.Path.Team.UserId == WebMatrix.WebData.WebSecurity.CurrentUserId
-        //                && x.Position == user.State.Position).
-        //                Select(x => new
-        //                {
-        //                    gameStarted = true,
-        //                    img = x.Img,
-        //                    comments = x.Comments,
-        //                    number = x.Position,
-        //                    scoreboard = score,
-        //                    teamId = WebMatrix.WebData.WebSecurity.CurrentUserId,
-        //                    points = user.Points
-        //                }).FirstOrDefault(), JsonRequestBehavior.AllowGet);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Response.Write(e.Message);
-        //    }
-        //    return Json(new { }, JsonRequestBehavior.AllowGet);
-        //
-        //}
-        //
+        [HttpPost]
+        public ActionResult TryAnswer(string answer)
+        {
+            try
+            {
+                AnswerResult result = _service.TryAnswer(WebSecurity.CurrentUserId, answer);
+                if(result.End)
+                    GlobalHost.ConnectionManager.GetHubContext<FindHub>().Clients.All.userFinished(WebSecurity.CurrentUserId);
+                else
+                    GlobalHost.ConnectionManager.GetHubContext<FindHub>().Clients.All.userAnswered(WebSecurity.CurrentUserId);
+                return Json(result);
+            }
+            catch (Exception e)
+            {
+                return Json(new { message = e.Message });
+            }
+        }
+        
+        [HttpGet]
+        public ActionResult State()
+        {
+            try
+            {
+                return Json(_service.GetGameState(WebSecurity.CurrentUserId), JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(new { message = e.Message }, JsonRequestBehavior.AllowGet);
+            }        
+        }
+        
         //[HttpGet]
         //public ActionResult Freeze(int userId)
         //{
@@ -160,11 +106,11 @@ namespace FindSystem.Controllers
         //    }
         //
         //}
-        //
-        //[HttpGet]
-        //public ActionResult Scoreboard()
-        //{
-        //    return Json(_contextProvider.States.Select(x => new { teamName = x.Team.Path.Name, teamId = x.Team.UserId, position = x.Position }), JsonRequestBehavior.AllowGet);
-        //}
+
+        [HttpGet]
+        public ActionResult Scoreboard()
+        {
+            return Json(_service.Scoreboard(), JsonRequestBehavior.AllowGet);
+        }
     }
 }

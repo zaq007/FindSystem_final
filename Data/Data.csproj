@@ -39,7 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entity\ITask.cs" />
+    <Compile Include="DTO\AnswerResult.cs" />
+    <Compile Include="DTO\GameState.cs" />
+    <Compile Include="Entity\Tables\ITask.cs" />
+    <Compile Include="Entity\Views\IScoreboard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

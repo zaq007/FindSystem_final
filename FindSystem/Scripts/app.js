@@ -19,9 +19,9 @@ module.controller("mainController", ['$scope', '$http',
             $http.post('/Game/Start').then(function(data)
             {
                 $scope.gameStarted = true;
-                $scope.img = data.data[0].Url;
-                $scope.task = data.data[0].Description;
-                $scope.number = data.data[0].number;
+                $scope.img = data.data.Url;
+                $scope.task = data.data.Description;
+                ///$scope.number = data.data[0].number;
             });
         }
 
@@ -29,14 +29,14 @@ module.controller("mainController", ['$scope', '$http',
             $scope.message = null;
             $http.post('/Game/TryAnswer', { "answer": input }).then(function (data) {
                 console.log(data);
-                if (data.data.end === true) {
+                if (data.data.End === true) {
                     $scope.end = true;
                     $scope.message = "End of the game";
                 } else
-                    if (data.data.right === true) {
-                        $scope.img = data.data.img;
-                        $scope.task = data.data.comments;
-                        $scope.number = data.data.number;
+                    if (data.data.IsRight === true) {
+                        $scope.img = data.data.Task.Url;
+                        $scope.task = data.data.Task.Description;
+                        //$scope.number = data.data.number;
                     } else {
                         $scope.message = data.data.message;
                     }
@@ -52,16 +52,18 @@ module.controller("mainController", ['$scope', '$http',
         }
 
         $http.get('/Game/State').then(function (data) {
-            $scope.gameStarted = data.data.gameStarted || false;
-            $scope.currentTeamId = data.data.teamId;
-            $scope.points = data.data.points;
-            $scope.img = data.data.img;
-            $scope.task = data.data.comments;
-            $scope.number = data.data.number;
+            $scope.gameStarted = data.data.IsStarted;
+            $scope.currentTeamId = data.data.UserId;
+            //$scope.points = data.data.points;
+            if (data.data.Task) {
+                $scope.img = data.data.Task.Url;
+                $scope.task = data.data.Task.Description;
+            }
+            //$scope.number = data.data.number;
             $scope.rotated = data.data.rotated || false;
             $scope.frozen = data.data.frozen || false;
-            $scope.scoreboard = JSON.parse(data.data.scoreboard) || [];
-            $scope.end = data.data.end;
+            $scope.scoreboard = data.data.Scoreboard;
+            $scope.end = data.data.IsFinished;
             if($scope.end)
                 $scope.message = "End of the game";
         });
@@ -76,10 +78,17 @@ module.controller("mainController", ['$scope', '$http',
             $scope.frozen = false;
         };
 
-        chat.client.scoreboard = function (teamId, pos) {
+        chat.client.userAnswered = function (teamId) {
             for (var i = 0; i < $scope.scoreboard.length; i++)
                 if ($scope.scoreboard[i].teamId == teamId) {
-                    $scope.scoreboard[i].position = pos;
+                    $scope.scoreboard[i].position++;
+                }
+        };
+
+        chat.client.userFinished = function (teamId) {
+            for (var i = 0; i < $scope.scoreboard.length; i++)
+                if ($scope.scoreboard[i].teamId == teamId) {
+                    //weird logic here
                 }
         };
 

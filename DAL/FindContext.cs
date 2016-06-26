@@ -21,6 +21,8 @@ namespace DAL
         public DbSet<State> States { get; set; }
         public DbSet<Path_Task> Path_Task { get; set; }
 
+        public DbSet<Scoreboard> Scoreboard { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Task>()
@@ -38,11 +40,6 @@ namespace DAL
             .WithRequiredPrincipal();
 
             base.OnModelCreating(modelBuilder);
-        }
-
-        public override int SaveChanges()
-        {
-            return base.SaveChanges();
         }
 
         public virtual IEnumerable<Task> GetCurrentTask(int userId)
