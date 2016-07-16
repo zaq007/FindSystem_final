@@ -6,7 +6,7 @@
         <title>Найди</title>
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <meta name="viewport" content="width=device-width" />
-        @Styles.Render("~/Content/css", "~/Content/bootstrap.min.css")
+        @Styles.Render("~/Content/css", "~/Content/bootstrap.min.css", "~/Content/ui-grid.min.css")
         @Scripts.Render("~/bundles/modernizr")
     </head>
     <body>
@@ -22,7 +22,9 @@
                         "~/Scripts/jquery.signalR-2.2.0.min.js",
                         "/signalr/hubs",
                         "~/Scripts/bootstrap.min.js",
-                        "~/Scripts/angular-ui/ui-bootstrap-tpls.min.js")
+                        "~/Scripts/angular-ui/ui-bootstrap-tpls.min.js",
+                        "~/Scripts/ui-grid.min.js",
+                        "~/Scripts/ui-grid-breeze.js")
         @RenderSection("scripts", required: false)
     </body>
 </html>

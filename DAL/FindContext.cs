@@ -26,14 +26,14 @@ namespace DAL
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Task>()
-            .HasMany(a => a.Pathes)
-            .WithMany()
-            .Map(x =>
-            {
-                x.MapLeftKey("TaskId");
-                x.MapRightKey("PathId");
-                x.ToTable("Path_Task");
-            });
+            .HasMany(c => c.Path_Task)
+            .WithRequired()
+            .HasForeignKey(c => c.TaskId);
+            
+            modelBuilder.Entity<Path>()
+            .HasMany(c => c.Path_Task)
+            .WithRequired()
+            .HasForeignKey(c => c.PathId);
 
             modelBuilder.Entity<State>()
             .HasRequired(a => a.UserProfile)
